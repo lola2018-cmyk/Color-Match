@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  --bg: #fff8fb;
+  --panel: rgba(255, 255, 255, 0.72);
+  --panel-strong: rgba(255, 255, 255, 0.88);
+  --text: #47152e;
+  --muted: #8c5670;
+  --line: rgba(255, 105, 145, 0.18);
+  --primary: #ff5c96;
+  --primary-strong: #ff2f7d;
+  --shadow: 0 24px 80px rgba(255, 109, 162, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  font-family: 'Manrope', sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255, 133, 184, 0.35), transparent 28%),
+    radial-gradient(circle at 85% 10%, rgba(255, 211, 224, 0.8), transparent 24%),
+    radial-gradient(circle at 30% 80%, rgba(255, 194, 214, 0.5), transparent 26%),
+    linear-gradient(135deg, #fff7fb 0%, #ffe7f0 48%, #fff9fc 100%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.shell {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.shell::before,
+.shell::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(20px);
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.shell::before {
+  width: 320px;
+  height: 320px;
+  top: -80px;
+  left: -60px;
+  background: rgba(255, 122, 168, 0.35);
+}
+
+.shell::after {
+  width: 260px;
+  height: 260px;
+  bottom: -40px;
+  right: -40px;
+  background: rgba(255, 189, 208, 0.5);
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 48px;
+}
+
+.glass-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+}
+
+.hero-card {
+  border-radius: 36px;
+  padding: 28px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 105, 145, 0.16);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.brand-title {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.04em;
+}
+
+.primary-btn,
+.secondary-btn,
+.ghost-btn {
+  border: 0;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.primary-btn:hover,
+.secondary-btn:hover,
+.ghost-btn:hover {
+  transform: translateY(-1px);
+}
+
+.primary-btn {
+  color: white;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+  box-shadow: 0 16px 36px rgba(255, 78, 140, 0.3);
+}
+
+.secondary-btn {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 105, 145, 0.18);
+}
+
+.ghost-btn {
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 105, 145, 0.14);
+}
+
+.field,
+.select {
+  width: 100%;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 105, 145, 0.18);
+  background: rgba(255, 255, 255, 0.74);
+  padding: 14px 16px;
+  color: var(--text);
+  outline: none;
+}
+
+.field:focus,
+.select:focus {
+  border-color: rgba(255, 72, 137, 0.45);
+  box-shadow: 0 0 0 4px rgba(255, 92, 150, 0.1);
+}
+
+.metric-card {
+  border-radius: 28px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 105, 145, 0.14);
+}
+
+.progress-bar {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 105, 145, 0.12);
+  overflow: hidden;
+}
+
+.progress-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff8fba 0%, #ff4d8d 100%);
+}
+
+.floating {
+  animation: floating 6s ease-in-out infinite;
+}
+
+.pulse-glow {
+  animation: pulseGlow 2.2s ease-in-out infinite;
+}
+
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(255, 88, 148, 0);
+  }
+  50% {
+    box-shadow: 0 0 36px rgba(255, 88, 148, 0.28);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px) rotate(-1deg);
+  }
+  75% {
+    transform: translateX(3px) rotate(1deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    width: min(100% - 20px, 100%);
+    padding-top: 20px;
+  }
+
+  .hero-card {
+    border-radius: 28px;
+    padding: 20px;
+  }
+}
