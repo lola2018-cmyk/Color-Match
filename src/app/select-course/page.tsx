@@ -14,7 +14,6 @@ export default function SelectCoursePage() {
   const [selectedCourseId, setSelectedCourseId] = useState(COURSE_LIBRARY[0].id);
   const [playerCount, setPlayerCount] = useState(1);
   const [withBots, setWithBots] = useState(false);
-  const [showColorLabels, setShowColorLabels] = useState(true);
   const [cardDuration, setCardDuration] = useState(COURSE_LIBRARY[0].timePerCard);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -35,7 +34,7 @@ export default function SelectCoursePage() {
       mode: playerCount === 1 || withBots ? 'solo' : 'versus',
       playerCount,
       withBots,
-      showColorLabels,
+      showColorLabels: true,
       cardDuration,
     };
 
@@ -56,21 +55,20 @@ export default function SelectCoursePage() {
   };
 
   return (
-    <main className="shell">
+    <main className={`shell theme-${selectedCourse.difficulty}`}>
       <div className="page">
         <div className="mb-6 flex items-center justify-between gap-3">
           <Link href="/" className="ghost-btn rounded-full px-5 py-3 text-sm font-bold">
             Назад в лобби
           </Link>
-          <div className="badge">{profile ? `Организатор: ${profile.name}` : 'Нужна регистрация'}</div>
+          <div className="badge">{profile ? `${profile.avatar} ${profile.name}` : 'Нужна регистрация'}</div>
         </div>
 
         <div className="mb-8 max-w-3xl">
           <div className="badge">Настройка матча</div>
           <h1 className="brand-title mt-4 text-5xl font-bold md:text-6xl">Собери лобби под своё ТЗ</h1>
           <p className="mt-4 text-lg leading-8 text-[var(--muted)]">
-            Здесь задаётся курс, таймер на карточку, число игроков и дополнительный хардкор без цветовых
-            подписей на вариантах ответа.
+            Здесь задаётся курс, таймер на карточку, число игроков и формат текстовых ответов.
           </p>
         </div>
 
@@ -89,9 +87,7 @@ export default function SelectCoursePage() {
               >
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div>
-                    <div className="text-sm font-bold uppercase tracking-[0.22em] text-[var(--muted)]">
-                      {course.difficulty}
-                    </div>
+                    <div className="text-sm font-bold uppercase tracking-[0.22em] text-[var(--muted)]">{course.difficulty}</div>
                     <div className="mt-1 text-3xl font-extrabold">{course.name}</div>
                   </div>
                   <div className="badge">{course.vibe}</div>
@@ -136,24 +132,12 @@ export default function SelectCoursePage() {
                 />
                 <span>
                   <div className="font-bold">Заполнить свободные места ботами</div>
-                  <div className="text-sm text-[var(--muted)]">
-                    Если отключено, матч ждёт только живых игроков. В режиме на 1 игрока опция не нужна.
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-[var(--muted)]">
+                    <span className="badge">👤 + 🤖 гибридный режим</span>
+                    <span className="badge">👥👥 все живые</span>
+                    <span className="badge">🤖🤖 только боты</span>
                   </div>
-                </span>
-              </label>
-
-              <label className="flex items-start gap-3 rounded-[24px] bg-white/65 p-4">
-                <input
-                  type="checkbox"
-                  checked={showColorLabels}
-                  onChange={(event) => setShowColorLabels(event.target.checked)}
-                  className="mt-1 h-5 w-5"
-                />
-                <span>
-                  <div className="font-bold">Показывать реальные названия цветов на кнопках</div>
-                  <div className="text-sm text-[var(--muted)]">
-                    Если выключить, ответы станут абстрактнее и распознавать придётся только по цвету.
-                  </div>
+                  <div className="mt-2 text-sm text-[var(--muted)]">Если отключено, матч ждёт только живых игроков.</div>
                 </span>
               </label>
 

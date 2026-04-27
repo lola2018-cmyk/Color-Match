@@ -234,7 +234,7 @@ export default function GamePage() {
 
   if (!session || !me) {
     return (
-      <main className="shell">
+      <main className={`shell theme-${currentCourse.difficulty}`}>
         <div className="page">
           <div className="glass-panel hero-card">
             <div className="text-2xl font-extrabold">Подключаемся к сессии...</div>
@@ -247,7 +247,7 @@ export default function GamePage() {
 
   if (session.status === 'finished') {
     return (
-      <main className="shell">
+      <main className={`shell theme-${currentCourse.difficulty}`}>
         <div className="page">
           <div className="glass-panel hero-card">
             <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -311,7 +311,7 @@ export default function GamePage() {
   const modalVisible = showRules && session.status === 'lobby' && !me.ready;
 
   return (
-    <main className="shell">
+    <main className={`shell theme-${currentCourse.difficulty}`}>
       <div className="page">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <button onClick={handleBackToLobby} className="ghost-btn rounded-full px-5 py-3 text-sm font-bold">

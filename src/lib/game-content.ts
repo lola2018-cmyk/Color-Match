@@ -25,6 +25,17 @@ export interface SavedPlayerProfile {
   id: string;
   name: string;
   email: string;
+  avatar: string;
+  status: string;
+}
+
+export interface SavedAccount {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  avatar: string;
+  status: string;
 }
 
 export interface SavedSessionConfig {
@@ -69,6 +80,8 @@ export const COLOR_HEX: Record<ColorKey, string> = {
   purple: '#9b5de5',
   orange: '#fb8500',
 };
+
+export const CAT_AVATARS = ['🐱', '😺', '😻', '🐈', '🐈‍⬛', '😸', '😹', '🙀'];
 
 const EASY_CARDS: CourseCardSeed[] = [
   { word: 'КРАСНЫЙ', inkColor: 'blue' },

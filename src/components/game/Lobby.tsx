@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { HeroCatComputer } from '@/components/game/CatIllustrations';
-import { liveApi } from '@/lib/live-api';
-import { getPlayerProfile, logoutPlayer, savePendingSession } from '@/lib/storage';
 import type { SavedPlayerProfile } from '@/lib/game-content';
+import { liveApi } from '@/lib/live-api';
+import { getPlayerProfile, logoutPlayer, savePendingSession, updatePlayerStatus } from '@/lib/storage';
 
 type OpenSession = {
   id: string;
@@ -20,6 +20,7 @@ type OpenSession = {
 export default function GameLobby() {
   const router = useRouter();
   const [profile, setProfile] = useState<SavedPlayerProfile | null>(null);
+  const [statusDraft, setStatusDraft] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const [sessions, setSessions] = useState<OpenSession[]>([]);
   const [error, setError] = useState('');
@@ -27,7 +28,9 @@ export default function GameLobby() {
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
-      setProfile(getPlayerProfile());
+      const nextProfile = getPlayerProfile();
+      setProfile(nextProfile);
+      setStatusDraft(nextProfile?.status ?? '');
     }, 0);
 
     return () => window.clearTimeout(timeout);
@@ -86,11 +89,18 @@ export default function GameLobby() {
   const handleLogout = () => {
     logoutPlayer();
     setProfile(null);
+    setStatusDraft('');
     router.push('/');
   };
 
+  const handleStatusSave = () => {
+    const nextStatus = statusDraft.trim();
+    updatePlayerStatus(nextStatus);
+    setProfile((current) => (current ? { ...current, status: nextStatus } : current));
+  };
+
   return (
-    <main className="shell">
+    <main className="shell ambient-pink">
       <div className="page">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="badge">Stroop effect • live lobby • pink stress lab</div>
@@ -162,8 +172,9 @@ export default function GameLobby() {
             <div className="mb-4">
               <div className="text-sm font-bold uppercase tracking-[0.28em] text-[var(--muted)]">Лобби</div>
               <div className="mt-2 text-3xl font-extrabold">
-                {profile ? `Привет, ${profile.name}` : 'Сначала регистрация'}
+                {profile ? `${profile.avatar} ${profile.name}` : 'Сначала регистрация'}
               </div>
+              {profile?.status && <div className="mt-2 text-sm text-[var(--muted)]">“{profile.status}”</div>}
             </div>
 
             {!profile && (
@@ -183,6 +194,22 @@ export default function GameLobby() {
 
             {profile && (
               <>
+                <div className="mb-4 rounded-[28px] bg-white/70 p-5">
+                  <div className="text-sm font-bold uppercase tracking-[0.22em] text-[var(--muted)]">Статус игрока</div>
+                  <div className="mt-3 flex gap-3">
+                    <input
+                      value={statusDraft}
+                      onChange={(event) => setStatusDraft(event.target.value)}
+                      placeholder="Например: мяу, устал, настроен на победу"
+                      maxLength={42}
+                      className="field"
+                    />
+                    <button onClick={handleStatusSave} className="secondary-btn rounded-[20px] px-5 py-3 font-bold">
+                      Сохранить
+                    </button>
+                  </div>
+                </div>
+
                 <button
                   onClick={() => router.push('/select-course')}
                   className="primary-btn w-full rounded-[26px] px-6 py-4 font-extrabold"
