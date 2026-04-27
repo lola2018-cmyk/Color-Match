@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ResultCat } from '@/components/game/CatIllustrations';
 import { GameCard } from '@/components/game/GameCard';
 import { GameScoreboard } from '@/components/game/Scoreboard';
-import { RULES_COPY, getCourseById, type ColorKey } from '@/lib/game-content';
+import { RULES_COPY, getCourseById, type ColorKey, type SavedPlayerProfile, type SavedSessionConfig } from '@/lib/game-content';
 import { liveApi } from '@/lib/live-api';
 import { clearPendingSession, getPendingSession, getPlayerProfile, saveMatchSummary } from '@/lib/storage';
 import type { LiveStateResponse } from '@/types/live-game';
@@ -23,20 +23,34 @@ export default function GamePage() {
   const params = useParams<{ sessionId: string }>();
   const router = useRouter();
   const sessionId = params.sessionId;
-  const profile = useMemo(() => getPlayerProfile(), []);
-  const pending = useMemo(() => getPendingSession(), []);
+  const [profile, setProfile] = useState<SavedPlayerProfile | null>(null);
+  const [pending, setPending] = useState<SavedSessionConfig | null>(null);
 
   const [state, setState] = useState<LiveStateResponse | null>(null);
   const [error, setError] = useState('');
   const [showRules, setShowRules] = useState(true);
   const [submittingReady, setSubmittingReady] = useState(false);
+  const [submittingStart, setSubmittingStart] = useState(false);
   const [answerLocked, setAnswerLocked] = useState(false);
   const [nowTick, setNowTick] = useState(() => Date.now());
   const pollRef = useRef<number | null>(null);
   const roundStartSeenRef = useRef<number | undefined>(undefined);
   const answeredRoundRef = useRef<number | null>(null);
 
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setProfile(getPlayerProfile());
+      setPending(getPendingSession());
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, []);
+
   const refreshState = useCallback(async () => {
+    if (!profile || !pending || pending.id !== sessionId) {
+      return;
+    }
+
     try {
       const nextState = await liveApi.getState(sessionId);
       setState(nextState);
@@ -44,9 +58,13 @@ export default function GamePage() {
     } catch (stateError) {
       setError(stateError instanceof Error ? stateError.message : 'Не удалось получить состояние матча.');
     }
-  }, [sessionId]);
+  }, [pending, profile, sessionId]);
 
   useEffect(() => {
+    if (profile === null && pending === null) {
+      return;
+    }
+
     if (!profile || !pending || pending.id !== sessionId) {
       router.replace('/');
       return;
@@ -75,6 +93,7 @@ export default function GamePage() {
   const currentCourse = getCourseById(session?.settings.courseId ?? 'pink-sprint');
   const countdown = getCountdownLabel(session?.countdownEndsAt);
   const readyToPlay = Boolean(session && me);
+  const isOwner = Boolean(profile && session && session.ownerId === profile.id);
 
   useEffect(() => {
     const roundStartedAt = session?.roundStartedAt;
@@ -107,6 +126,24 @@ export default function GamePage() {
     }
   };
 
+  const handleStart = async () => {
+    if (!profile || !session || session.ownerId !== profile.id) {
+      return;
+    }
+
+    setSubmittingStart(true);
+
+    try {
+      await liveApi.startSession(sessionId, profile.id);
+      await refreshState();
+      setError('');
+    } catch (startError) {
+      setError(startError instanceof Error ? startError.message : 'Не удалось запустить матч.');
+    } finally {
+      setSubmittingStart(false);
+    }
+  };
+
   const handleAnswer = async (answer: ColorKey) => {
     if (!profile || !session || !me || !session.currentCard || answerLocked) {
       return;
@@ -129,6 +166,12 @@ export default function GamePage() {
       answeredRoundRef.current = null;
       setError(submitError instanceof Error ? submitError.message : 'Ответ не отправлен.');
     }
+  };
+
+  const handleBackToLobby = () => {
+    clearPendingSession();
+    setPending(null);
+    router.push('/');
   };
 
   useEffect(() => {
@@ -241,9 +284,9 @@ export default function GamePage() {
                 </div>
 
                 <div className="mt-8 flex flex-wrap gap-3">
-                  <Link href="/" className="secondary-btn rounded-full px-6 py-4 font-bold">
+                  <button onClick={handleBackToLobby} className="secondary-btn rounded-full px-6 py-4 font-bold">
                     В новое лобби
-                  </Link>
+                  </button>
                   <Link href="/stats" className="primary-btn rounded-full px-6 py-4 font-bold">
                     Открыть статистику
                   </Link>
@@ -271,9 +314,9 @@ export default function GamePage() {
     <main className="shell">
       <div className="page">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <Link href="/" className="ghost-btn rounded-full px-5 py-3 text-sm font-bold">
+          <button onClick={handleBackToLobby} className="ghost-btn rounded-full px-5 py-3 text-sm font-bold">
             Выйти в лобби
-          </Link>
+          </button>
           <div className="badge">Сессия {session.id}</div>
         </div>
 
@@ -288,12 +331,37 @@ export default function GamePage() {
             <div className="mt-3 text-sm text-[var(--muted)]">
               Код для друзей: <span className="font-extrabold text-[var(--text)]">{session.id}</span>
             </div>
+            {session.status === 'lobby' && (
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  onClick={() => void handleReady(true)}
+                  disabled={submittingReady || me.ready}
+                  className="secondary-btn rounded-full px-5 py-3 text-sm font-bold disabled:opacity-50"
+                >
+                  {me.ready ? 'Готовность отмечена' : 'Я готов(а)'}
+                </button>
+                {isOwner && (
+                  <button
+                    onClick={() => void handleStart()}
+                    disabled={!session.canOwnerStart || submittingStart}
+                    className="primary-btn rounded-full px-5 py-3 text-sm font-bold disabled:opacity-50"
+                  >
+                    {submittingStart ? 'Запуск...' : 'Запустить игру'}
+                  </button>
+                )}
+                <div className="basis-full text-xs text-[var(--muted)]">
+                  {isOwner
+                    ? 'Создатель запускает матч вручную после готовности всех игроков.'
+                    : 'Ждём, когда создатель запустит матч после готовности всех игроков.'}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="glass-panel rounded-[32px] p-5">
             <div className="text-sm font-bold uppercase tracking-[0.24em] text-[var(--muted)]">Настройки</div>
             <div className="mt-3 flex flex-wrap gap-2 text-xs text-[var(--muted)]">
-              <span className="badge">{session.settings.showColorLabels ? 'Подписи включены' : 'Подписи скрыты'}</span>
+              <span className="badge">{session.settings.showColorLabels ? 'Текстовые ответы' : 'Текстовые ответы'}</span>
               <span className="badge">{(session.settings.cardDuration / 1000).toFixed(1)} c на карту</span>
               <span className="badge">{session.settings.withBots ? 'Есть боты' : 'Без ботов'}</span>
             </div>
@@ -333,7 +401,8 @@ export default function GamePage() {
               <div className="badge">Перед стартом</div>
               <h2 className="brand-title mt-4 text-4xl font-bold">Подтверди готовность к игре</h2>
               <p className="mt-4 text-[var(--muted)]">
-                Матч стартует только после того, как все участники подтвердят, что правила понятны.
+                Матч стартует только после того, как все участники подтвердят, что правила понятны, а
+                создатель нажмёт кнопку запуска.
               </p>
 
               <div className="mt-6 rounded-[28px] bg-white/70 p-5">
@@ -347,12 +416,21 @@ export default function GamePage() {
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <button
-                  onClick={() => handleReady(true)}
+                  onClick={() => void handleReady(true)}
                   disabled={submittingReady}
                   className="primary-btn rounded-full px-6 py-4 font-bold disabled:opacity-50"
                 >
                   {me.ready ? 'Готовность подтверждена' : 'Я готов(а)'}
                 </button>
+                {isOwner && (
+                  <button
+                    onClick={() => void handleStart()}
+                    disabled={!session.canOwnerStart || submittingStart}
+                    className="secondary-btn rounded-full px-6 py-4 font-bold disabled:opacity-50"
+                  >
+                    {submittingStart ? 'Запуск...' : 'Старт от создателя'}
+                  </button>
+                )}
                 <button
                   onClick={() => setShowRules(false)}
                   className="secondary-btn rounded-full px-6 py-4 font-bold"

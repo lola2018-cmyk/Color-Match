@@ -103,5 +103,6 @@ export interface LiveStateResponse {
     }>;
     roundAnswers: RoundAnswerState[];
     completedAt?: number;
+    canOwnerStart: boolean;
   };
 }

@@ -62,6 +62,11 @@ export const clearPendingSession = () => {
   window.sessionStorage.removeItem(SESSION_KEY);
 };
 
+export const logoutPlayer = () => {
+  clearPendingSession();
+  clearPlayerProfile();
+};
+
 export const getMatchHistory = () => readJson<MatchSummary[]>(HISTORY_KEY, []);
 
 export const saveMatchSummary = (summary: MatchSummary) => {

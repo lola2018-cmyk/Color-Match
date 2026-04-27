@@ -67,25 +67,14 @@ export function GameCard({
             type="button"
             disabled={disabled || hideButtons}
             onClick={() => onAnswer(option)}
-            className={`secondary-btn rounded-[28px] p-4 ${showColorLabels ? 'text-left' : 'min-h-[116px]'} disabled:cursor-not-allowed disabled:opacity-50`}
+            className="secondary-btn min-h-[116px] rounded-[28px] p-4 text-center disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {showColorLabels ? (
-              <div className="flex items-center gap-4">
-                <span className="h-12 w-12 rounded-2xl shadow-sm" style={{ background: COLOR_HEX[option] }} />
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--muted)]">Ответ {index + 1}</div>
-                  <div className="mt-1 text-lg font-extrabold">{COLOR_LABELS[option]}</div>
-                </div>
+            <div className="flex h-full flex-col items-center justify-center gap-2">
+              <div className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--muted)]">Ответ {index + 1}</div>
+              <div className="text-lg font-extrabold">
+                {showColorLabels ? COLOR_LABELS[option] : COLOR_LABELS[option]}
               </div>
-            ) : (
-              <div className="flex h-full items-center justify-center">
-                <span
-                  className="h-16 w-16 rounded-[22px] shadow-sm md:h-20 md:w-20"
-                  style={{ background: COLOR_HEX[option] }}
-                  aria-label={COLOR_LABELS[option]}
-                />
-              </div>
-            )}
+            </div>
           </button>
         ))}
       </div>

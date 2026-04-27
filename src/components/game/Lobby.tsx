@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HeroCatComputer } from '@/components/game/CatIllustrations';
 import { liveApi } from '@/lib/live-api';
-import { getPlayerProfile, savePendingSession } from '@/lib/storage';
+import { getPlayerProfile, logoutPlayer, savePendingSession } from '@/lib/storage';
+import type { SavedPlayerProfile } from '@/lib/game-content';
 
 type OpenSession = {
   id: string;
@@ -18,11 +19,19 @@ type OpenSession = {
 
 export default function GameLobby() {
   const router = useRouter();
-  const profile = useMemo(() => getPlayerProfile(), []);
+  const [profile, setProfile] = useState<SavedPlayerProfile | null>(null);
   const [joinCode, setJoinCode] = useState('');
   const [sessions, setSessions] = useState<OpenSession[]>([]);
   const [error, setError] = useState('');
   const [busyCode, setBusyCode] = useState('');
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setProfile(getPlayerProfile());
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -40,8 +49,8 @@ export default function GameLobby() {
       }
     };
 
-    loadSessions();
-    const interval = window.setInterval(loadSessions, 2500);
+    void loadSessions();
+    const interval = window.setInterval(() => void loadSessions(), 2500);
 
     return () => {
       isMounted = false;
@@ -74,6 +83,12 @@ export default function GameLobby() {
     }
   };
 
+  const handleLogout = () => {
+    logoutPlayer();
+    setProfile(null);
+    router.push('/');
+  };
+
   return (
     <main className="shell">
       <div className="page">
@@ -86,13 +101,18 @@ export default function GameLobby() {
             <Link href="/leaderboard" className="ghost-btn rounded-full px-5 py-3 text-sm font-bold">
               Рейтинг
             </Link>
+            {profile && (
+              <button onClick={handleLogout} className="ghost-btn rounded-full px-5 py-3 text-sm font-bold">
+                Выйти
+              </button>
+            )}
           </div>
         </div>
 
         <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="glass-panel hero-card">
             <div className="mb-5 flex flex-wrap gap-3">
-              <div className="badge">2-4 игрока</div>
+              <div className="badge">1-4 игрока</div>
               <div className="badge">живые лобби + боты</div>
               <div className="badge">эффект Струпа</div>
             </div>
@@ -104,9 +124,9 @@ export default function GameLobby() {
             </h1>
 
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
-              Тест Струпа проверяет, как мозг справляется с конфликтом между чтением слова и восприятием
-              цвета. Когда написано «КРАСНЫЙ», но чернила синие, приходится подавлять автоматическое
-              чтение и быстро выбирать правильный сенсорный сигнал.
+              Тест Струпа проверяет, как мозг справляется с конфликтом между чтением слова и восприятием цвета.
+              Когда написано «КРАСНЫЙ», но чернила синие, приходится подавлять автоматическое чтение и быстро
+              выбирать правильный сенсорный сигнал.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
@@ -130,7 +150,7 @@ export default function GameLobby() {
                 <ul className="mt-4 space-y-2 text-sm leading-7 text-[var(--muted)]">
                   <li>Все игроки видят одну и ту же карточку одновременно.</li>
                   <li>Правильный ответ считается только по цвету чернил.</li>
-                  <li>Первый верный ответ получает максимальный бонус за скорость.</li>
+                  <li>Создатель лобби запускает игру вручную после готовности всех игроков.</li>
                   <li>Неверный ответ включает у остальных временную визуальную помеху.</li>
                 </ul>
               </div>
@@ -212,7 +232,7 @@ export default function GameLobby() {
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2 text-xs text-[var(--muted)]">
                       <span className="badge">Игроков: {session.playersJoined}/{session.playerCount}</span>
-                      <span className="badge">{session.withBots ? 'С ботами' : 'Только люди'}</span>
+                      <span className="badge">{session.withBots ? 'С ботами' : 'Без ботов'}</span>
                     </div>
                     <button
                       onClick={() => handleJoin(session.id)}

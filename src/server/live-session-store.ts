@@ -32,16 +32,12 @@ const getSessionInternal = (sessionId: string) => {
   return session;
 };
 
-const startCountdownIfReady = (session: LiveSession) => {
-  if (session.status !== 'lobby') {
-    return;
-  }
+const canOwnerStartSession = (session: LiveSession) =>
+  session.status === 'lobby' &&
+  session.players.length >= 1 &&
+  session.players.every((player) => player.ready);
 
-  const everyoneReady = session.players.length >= 1 && session.players.every((player) => player.ready);
-  if (!everyoneReady) {
-    return;
-  }
-
+const startCountdown = (session: LiveSession) => {
   session.status = 'countdown';
   session.countdownEndsAt = now() + 4000;
 };
@@ -246,7 +242,21 @@ export const setPlayerReady = (sessionId: string, playerId: string, ready: boole
   }
 
   player.ready = ready;
-  startCountdownIfReady(session);
+  return cloneSession(session);
+};
+
+export const startSession = (sessionId: string, ownerId: string) => {
+  const session = getSessionInternal(sessionId);
+
+  if (session.ownerId !== ownerId) {
+    throw new Error('Only the lobby creator can start the game');
+  }
+
+  if (!canOwnerStartSession(session)) {
+    throw new Error('All players must confirm readiness before start');
+  }
+
+  startCountdown(session);
   return cloneSession(session);
 };
 
@@ -358,6 +368,7 @@ export const getSessionState = (sessionId: string): LiveStateResponse => {
       ),
       roundAnswers: session.roundAnswers,
       completedAt: session.completedAt,
+      canOwnerStart: canOwnerStartSession(session),
     },
   };
 };

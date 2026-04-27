@@ -49,6 +49,15 @@ export const liveApi = {
       })
     );
   },
+  async startSession(sessionId: string, ownerId: string) {
+    return parseJson<{ session: { id: string } }>(
+      await fetch(`/api/live/sessions/${sessionId}/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ownerId }),
+      })
+    );
+  },
   async submitAnswer(sessionId: string, playerId: string, answer: ColorKey, reactionTime: number) {
     return parseJson<{ session: { id: string } }>(
       await fetch(`/api/live/sessions/${sessionId}/answer`, {

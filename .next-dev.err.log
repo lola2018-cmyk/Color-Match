@@ -5074,3 +5074,150 @@ https://react.dev/link/hydration-mismatch
   66 |         </div>
   67 |
   68 |         <div className="mb-8 max-w-3xl">
+[browser] Uncaught Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <LoadingBoundary name="/" loading={null}>
+      <HTTPAccessFallbackBoundary notFound={{...}} forbidden={undefined} unauthorized={undefined}>
+        <HTTPAccessFallbackErrorBoundary pathname="/" notFound={{...}} forbidden={undefined} unauthorized={undefined} ...>
+          <RedirectBoundary>
+            <RedirectErrorBoundary router={{...}}>
+              <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+                <SegmentViewNode type="page" pagePath="page.tsx">
+                  <SegmentTrieNode>
+                  <HomePage>
+                    <GameLobby>
+                      <main className="shell">
+                        <div className="page">
+                          <div>
+                          <section className="grid gap-6...">
+                            <div>
+                            <div className="glass-pane...">
+                              <div className="mb-4">
+                                <div>
+                                <div className="mt-2 text-3xl font-extrabold">
++                                 Привет, Liza
+-                                 Сначала регистрация
+                              ...
+                ...
+              ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at div (<anonymous>)
+    at GameLobby (src/components/game/Lobby.tsx:144:15)
+    at HomePage (src\app\page.tsx:4:10)
+  142 |             <div className="mb-4">
+  143 |               <div className="text-sm font-bold uppercase tracking-[0.28em] text-[var(--m...
+> 144 |               <div className="mt-2 text-3xl font-extrabold">
+      |               ^
+  145 |                 {profile ? `Привет, ${profile.name}` : 'Сначала регистрация'}
+  146 |               </div>
+  147 |             </div>
+[browser] Uncaught Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <LoadingBoundary name="/" loading={null}>
+      <HTTPAccessFallbackBoundary notFound={{...}} forbidden={undefined} unauthorized={undefined}>
+        <HTTPAccessFallbackErrorBoundary pathname="/" notFound={{...}} forbidden={undefined} unauthorized={undefined} ...>
+          <RedirectBoundary>
+            <RedirectErrorBoundary router={{...}}>
+              <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+                <SegmentViewNode type="page" pagePath="page.tsx">
+                  <SegmentTrieNode>
+                  <HomePage>
+                    <GameLobby>
+                      <main className="shell">
+                        <div className="page">
+                          <div>
+                          <section className="grid gap-6...">
+                            <div>
+                            <div className="glass-pane...">
+                              <div className="mb-4">
+                                <div>
+                                <div className="mt-2 text-3xl font-extrabold">
++                                 Привет, Liza
+-                                 Сначала регистрация
+                              ...
+                ...
+              ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at div (<anonymous>)
+    at GameLobby (src/components/game/Lobby.tsx:144:15)
+    at HomePage (src\app\page.tsx:4:10)
+  142 |             <div className="mb-4">
+  143 |               <div className="text-sm font-bold uppercase tracking-[0.28em] text-[var(--m...
+> 144 |               <div className="mt-2 text-3xl font-extrabold">
+      |               ^
+  145 |                 {profile ? `Привет, ${profile.name}` : 'Сначала регистрация'}
+  146 |               </div>
+  147 |             </div>
+[browser] Uncaught Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <LoadingBoundary name="/" loading={null}>
+      <HTTPAccessFallbackBoundary notFound={{...}} forbidden={undefined} unauthorized={undefined}>
+        <HTTPAccessFallbackErrorBoundary pathname="/" notFound={{...}} forbidden={undefined} unauthorized={undefined} ...>
+          <RedirectBoundary>
+            <RedirectErrorBoundary router={{...}}>
+              <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+                <SegmentViewNode type="page" pagePath="page.tsx">
+                  <SegmentTrieNode>
+                  <HomePage>
+                    <GameLobby>
+                      <main className="shell">
+                        <div className="page">
+                          <div>
+                          <section className="grid gap-6...">
+                            <div>
+                            <div className="glass-pane...">
+                              <div className="mb-4">
+                                <div>
+                                <div className="mt-2 text-3xl font-extrabold">
++                                 Привет, Liza
+-                                 Сначала регистрация
+                              ...
+                ...
+              ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at div (<anonymous>)
+    at GameLobby (src/components/game/Lobby.tsx:144:15)
+    at HomePage (src\app\page.tsx:4:10)
+  142 |             <div className="mb-4">
+  143 |               <div className="text-sm font-bold uppercase tracking-[0.28em] text-[var(--m...
+> 144 |               <div className="mt-2 text-3xl font-extrabold">
+      |               ^
+  145 |                 {profile ? `Привет, ${profile.name}` : 'Сначала регистрация'}
+  146 |               </div>
+  147 |             </div>
