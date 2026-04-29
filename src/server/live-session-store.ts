@@ -150,7 +150,7 @@ export const reconcileSession = (sessionId: string) => {
   return session;
 };
 
-export const createSession = (ownerId: string, ownerName: string, settings: SessionSettings) => {
+export const createSession = (ownerId: string, ownerName: string, settings: SessionSettings, ownerStatus?: string) => {
   const course = getCourseById(settings.courseId);
   const id = createSessionCode();
 
@@ -162,6 +162,7 @@ export const createSession = (ownerId: string, ownerName: string, settings: Sess
       score: 0,
       answers: [],
       penaltyUntil: 0,
+      status: ownerStatus,
     },
   ];
 
@@ -203,7 +204,7 @@ export const createSession = (ownerId: string, ownerName: string, settings: Sess
   return cloneSession(session);
 };
 
-export const joinSession = (sessionId: string, playerId: string, playerName: string) => {
+export const joinSession = (sessionId: string, playerId: string, playerName: string, playerStatus?: string) => {
   const session = getSessionInternal(sessionId);
   reconcileSession(sessionId);
 
@@ -214,6 +215,9 @@ export const joinSession = (sessionId: string, playerId: string, playerName: str
   const existingPlayer = session.players.find((player) => player.id === playerId);
   if (existingPlayer) {
     existingPlayer.name = playerName;
+    if (playerStatus !== undefined) {
+      existingPlayer.status = playerStatus;
+    }
     return cloneSession(session);
   }
 
@@ -229,6 +233,7 @@ export const joinSession = (sessionId: string, playerId: string, playerName: str
     score: 0,
     answers: [],
     penaltyUntil: 0,
+    status: playerStatus,
   });
 
   return cloneSession(session);
@@ -363,6 +368,7 @@ export const getSessionState = (sessionId: string): LiveStateResponse => {
             fastestReactionTime: stats.fastestReactionTime,
             firstAnswers: stats.firstAnswers,
             hasAnsweredCurrentRound: session.roundAnswers.some((entry) => entry.playerId === player.id),
+            status: player.status,
           };
         })
       ),

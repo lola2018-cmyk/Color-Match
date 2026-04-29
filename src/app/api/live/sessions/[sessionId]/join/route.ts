@@ -5,6 +5,7 @@ import { joinSession } from '@/server/live-session-store';
 const joinSchema = z.object({
   playerId: z.string().min(1),
   playerName: z.string().min(1),
+  playerStatus: z.string().optional(),
 });
 
 type Context = {
@@ -19,7 +20,12 @@ export async function POST(request: Request, context: Context) {
 
   try {
     const { sessionId } = await context.params;
-    const session = joinSession(sessionId, parsed.data.playerId, parsed.data.playerName);
+    const session = joinSession(
+      sessionId,
+      parsed.data.playerId,
+      parsed.data.playerName,
+      parsed.data.playerStatus
+    );
     return NextResponse.json({ session });
   } catch (error) {
     return NextResponse.json(

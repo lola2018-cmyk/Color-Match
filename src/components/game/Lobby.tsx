@@ -71,7 +71,7 @@ export default function GameLobby() {
     setError('');
 
     try {
-      await liveApi.joinSession(sessionId, profile.id, profile.name);
+      await liveApi.joinSession(sessionId, profile.id, profile.name, profile.status);
       savePendingSession({
         id: sessionId,
         joinedAsPlayerId: profile.id,

@@ -422,15 +422,6 @@ export default function GamePage() {
                 >
                   {me.ready ? 'Готовность подтверждена' : 'Я готов(а)'}
                 </button>
-                {isOwner && (
-                  <button
-                    onClick={() => void handleStart()}
-                    disabled={!session.canOwnerStart || submittingStart}
-                    className="secondary-btn rounded-full px-6 py-4 font-bold disabled:opacity-50"
-                  >
-                    {submittingStart ? 'Запуск...' : 'Старт от создателя'}
-                  </button>
-                )}
                 <button
                   onClick={() => setShowRules(false)}
                   className="secondary-btn rounded-full px-6 py-4 font-bold"

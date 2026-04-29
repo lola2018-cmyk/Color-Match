@@ -11,6 +11,7 @@ interface ScoreboardPlayer {
   hasAnsweredCurrentRound?: boolean;
   isBot?: boolean;
   ready?: boolean;
+  status?: string;
 }
 
 interface GameScoreboardProps {
@@ -33,6 +34,9 @@ export function GameScoreboard({ players, courseName }: GameScoreboardProps) {
                   #{index + 1} {player.isBot ? 'bot' : 'player'}
                 </div>
                 <div className="mt-1 text-lg font-extrabold">{player.name}</div>
+                {player.status && (
+                  <div className="mt-1 text-sm text-[var(--muted)]">"{player.status}"</div>
+                )}
               </div>
               <div className="text-right">
                 <div className="text-2xl font-extrabold">{player.score}</div>

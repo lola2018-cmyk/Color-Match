@@ -31,6 +31,7 @@ export interface LivePlayer {
   answers: LiveAnswerLog[];
   penaltyUntil: number;
   penaltyType?: PenaltyType;
+  status?: string;
 }
 
 export interface RoundAnswerState {
@@ -100,6 +101,7 @@ export interface LiveStateResponse {
       fastestReactionTime: number;
       firstAnswers: number;
       hasAnsweredCurrentRound: boolean;
+      status?: string;
     }>;
     roundAnswers: RoundAnswerState[];
     completedAt?: number;

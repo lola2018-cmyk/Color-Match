@@ -17,21 +17,21 @@ export const liveApi = {
       await fetch('/api/live/sessions', { cache: 'no-store' })
     );
   },
-  async createSession(ownerId: string, ownerName: string, settings: SessionSettings) {
+  async createSession(ownerId: string, ownerName: string, settings: SessionSettings, ownerStatus?: string) {
     return parseJson<{ session: { id: string; ownerId: string } }>(
       await fetch('/api/live/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ownerId, ownerName, settings }),
+        body: JSON.stringify({ ownerId, ownerName, settings, ownerStatus }),
       })
     );
   },
-  async joinSession(sessionId: string, playerId: string, playerName: string) {
+  async joinSession(sessionId: string, playerId: string, playerName: string, playerStatus?: string) {
     return parseJson<{ session: { id: string } }>(
       await fetch(`/api/live/sessions/${sessionId}/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ playerId, playerName }),
+        body: JSON.stringify({ playerId, playerName, playerStatus }),
       })
     );
   },

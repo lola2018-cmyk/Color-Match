@@ -39,7 +39,7 @@ export default function SelectCoursePage() {
     };
 
     try {
-      const response = await liveApi.createSession(profile.id, profile.name, settings);
+      const response = await liveApi.createSession(profile.id, profile.name, settings, profile.status);
       savePendingSession({
         id: response.session.id,
         joinedAsPlayerId: profile.id,
@@ -61,7 +61,12 @@ export default function SelectCoursePage() {
           <Link href="/" className="ghost-btn rounded-full px-5 py-3 text-sm font-bold">
             Назад в лобби
           </Link>
-          <div className="badge">{profile ? `${profile.avatar} ${profile.name}` : 'Нужна регистрация'}</div>
+          <div className="flex flex-col items-end gap-1">
+            <div className="badge">{profile ? `${profile.avatar} ${profile.name}` : 'Нужна регистрация'}</div>
+            {profile?.status && (
+              <div className="text-xs text-[var(--muted)]">"{profile.status}"</div>
+            )}
+          </div>
         </div>
 
         <div className="mb-8 max-w-3xl">

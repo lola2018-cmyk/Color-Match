@@ -5,6 +5,7 @@ import { createSession, listOpenSessions } from '@/server/live-session-store';
 const createSessionSchema = z.object({
   ownerId: z.string().min(1),
   ownerName: z.string().min(1),
+  ownerStatus: z.string().optional(),
   settings: z.object({
     courseId: z.string().min(1),
     mode: z.enum(['solo', 'versus']),
@@ -25,6 +26,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
   }
 
-  const session = createSession(parsed.data.ownerId, parsed.data.ownerName, parsed.data.settings);
+  const session = createSession(
+    parsed.data.ownerId,
+    parsed.data.ownerName,
+    parsed.data.settings,
+    parsed.data.ownerStatus
+  );
   return NextResponse.json({ session });
 }
