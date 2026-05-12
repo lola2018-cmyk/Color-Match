@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'node',
-    globals: true,
+    globals: false,
   },
   resolve: {
     alias: {
